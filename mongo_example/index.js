@@ -47,8 +47,13 @@ app.get("/users/:id", function(req,res) {
   })
 });
 
-app.get("/dump", function(req, res) {
-  var users;
+
+app.get("/users/:id/books", function(req, res) {
+  var user_id = req.params.id;
+  db.Book.find({ _user_id: user_id }, function (err, books) {
+    res.send(200, books);
+  });
 });
+
 
 app.listen(3000);
