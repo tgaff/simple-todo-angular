@@ -3,6 +3,8 @@ var express = require("express"),
   app = express();
   path = require("path");
   fs = require("fs");
+  _ = require("underscore");
+
 
 var embolden = function(some_str) {
   return "<h1>" + some_str + "</h1>";
@@ -41,7 +43,10 @@ app.engine("html", function () {
   var cb = args.pop();  //off the end
   var file = fs.readFileSync(path).toString();  //buffering, we pull whole file in
   console.log("u used the engine to do some renderings");
-  cb(null, file);
+  var data = args.shift();
+  // turn file into a template
+  console.log(_.template(file));
+  cb(null, _.template(file)(data) ); //_.template(file) must return a function
 });
 
 
@@ -49,7 +54,7 @@ app.engine("html", function () {
 app.get("/", function (req, res) {
   //res.sendFile(path.join(__dirname, "views", "index.html"));
   //res.sendHTML("index.html"); //before implement engine, with middleware
-  res.render("index.html");
+  res.render("index.html", {name: "ze vurld"});
 });
 
 
@@ -60,7 +65,6 @@ app.use(function(req,res,next) {
   console.log("Running (middlewares)");
   res.sendOps = {};
   res.sendOps.root = path.join(__dirname, "views");
-
   res.sendHTML = function(fname) {
     res.sendFile(fname, res.sendOps);
 
